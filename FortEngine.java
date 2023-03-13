@@ -1,14 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class FortEngine extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
-    private static final double FOV = 1000;
     private static final int ROTATION_SPEED = 2;
     private static final int MOVE_SPEED = 5;
 
@@ -28,13 +26,13 @@ public class FortEngine extends JPanel {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
-        ArrayList<Point2D> points2D = convertPointsTo2D();
+        ArrayList<Point2D> points2D = convertPointsTo2D(points);
         drawEdges(g, points2D);
     }
 
-    private ArrayList<Point2D> convertPointsTo2D() {
+    private ArrayList<Point2D> convertPointsTo2D(ArrayList<Point3D> ps) {
         ArrayList<Point2D> points2D = new ArrayList<Point2D>();
-        for (Point3D point : points) {
+        for (Point3D point : ps) {
             points2D.add(point.toPoint2D());
         }
         return points2D;
@@ -74,33 +72,28 @@ public class FortEngine extends JPanel {
         repaint();
     }
 
-    public void moveLeft() {
-        for (Point3D point : points) {
-            point.setX(point.getX() - MOVE_SPEED);
-        }
-        repaint();
-    }
-
-    public void moveRight() {
+    public void moveHorizontally(int dir) {
+        dir = dir(dir);
         for (Point3D point : points) {
             point.setX(point.getX() + MOVE_SPEED);
         }
         repaint();
     }
-
-    public void moveUp() {
-        for (Point3D point : points) {
-            point.setY(point.getY() - MOVE_SPEED);
-        }
-        repaint();
-    }
-
-    public void moveDown() {
+    
+    public void moveVertically(int dir) {
+        dir = dir(dir);
         for (Point3D point : points) {
             point.setY(point.getY() + MOVE_SPEED);
         }
         repaint();
     }
+    
+    private int dir(int dir){
+        if(dir >= 0)
+            return 1;
+        return -1;
+    }
+
     public ArrayList<Point3D> getPoints() {
         return points;
     }
