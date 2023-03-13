@@ -1,100 +1,60 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.ArrayList;
-import javax.swing.JPanel;
+import javafx.application.Application;
+import javafx.scene.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
+import javafx.scene.transform.Rotate;
+import javafx.stage.Stage;
+public class FortEngine extends Application {
 
-public class FortEngine extends JPanel {
-    private static final long serialVersionUID = 1L;
     private static final int WIDTH = 800;
     private static final int HEIGHT = 600;
-    private static final int ROTATION_SPEED = 2;
-    private static final int MOVE_SPEED = 5;
 
-    private ArrayList<Point3D> points;
-    private ArrayList<Line3D> lines;
-    private double xRotation;
-    private double yRotation;
+    private Group root;
 
-    public FortEngine(ArrayList<Point3D> points, ArrayList<Line3D> lines) {
-        this.points = points;
-        this.lines = lines;
-        this.xRotation = 0;
-        this.yRotation = 0;
+    @Override
+    public void start(Stage primaryStage) {
+        root = new Group();
+
+        // Create a box with a material and add it to the root group
+        Box box = new Box(100, 100, 100);
+        PhongMaterial material = new PhongMaterial();
+        material.setDiffuseColor(Color.BLUE);
+        box.setMaterial(material);
+        root.getChildren().add(box);
+
+        // Create a camera and add it to the root group
+        PerspectiveCamera camera = new PerspectiveCamera(true);
+        camera.setNearClip(0.1);
+        camera.setFarClip(10000.0);
+        camera.setTranslateZ(-500.0);
+        root.getChildren().add(camera);
+
+        // Create a scene and add it to the primary stage
+        Scene scene = new Scene(root, WIDTH, HEIGHT, true);
+        scene.setFill(Color.BLACK);
+        scene.setCamera(camera);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        // Add a rotation transform to the root group to make the box spin
+        Rotate rotation = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
+        root.getTransforms().add(rotation);
+
+        // Create an animation to continuously rotate the box
+        javafx.animation.Animation animation = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(
+                        javafx.util.Duration.seconds(1),
+                        event -> {
+                            rotation.setAngle(rotation.getAngle() + 1);
+                        }
+                )
+        );
+        animation.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        animation.play();
     }
 
-    public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
-
-        ArrayList<Point2D> points2D = convertPointsTo2D(points);
-        drawEdges(g, points2D);
-    }
-
-    private ArrayList<Point2D> convertPointsTo2D(ArrayList<Point3D> ps) {
-        ArrayList<Point2D> points2D = new ArrayList<Point2D>();
-        for (Point3D point : ps) {
-            points2D.add(point.toPoint2D());
-        }
-        return points2D;
-    }
-
-    private void drawEdges(Graphics g, ArrayList<Point2D> points2D) {
-        g.setColor(Color.WHITE);
-        for (Line3D line : lines) {
-            Line2D line2D = line.toLine2D();
-            Point2D p1 = line2D.getP1();
-            Point2D p2 = line2D.getP2();
-
-            double x1 = p1.getX();
-            double y1 = p1.getY();
-            double x2 = p2.getX();
-            double y2 = p2.getY();
-
-            g.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
-        }
-    }
-
-    public void rotateX(boolean clockwise) {
-        if (clockwise) {
-            xRotation += Math.toRadians(ROTATION_SPEED);
-        } else {
-            xRotation -= Math.toRadians(ROTATION_SPEED);
-        }
-        repaint();
-    }
-
-    public void rotateY(boolean clockwise) {
-        if (clockwise) {
-            yRotation += Math.toRadians(ROTATION_SPEED);
-        } else {
-            yRotation -= Math.toRadians(ROTATION_SPEED);
-        }
-        repaint();
-    }
-
-    public void moveHorizontally(int dir) {
-        dir = dir(dir);
-        for (Point3D point : points) {
-            point.setX(point.getX() + MOVE_SPEED);
-        }
-        repaint();
-    }
-    
-    public void moveVertically(int dir) {
-        dir = dir(dir);
-        for (Point3D point : points) {
-            point.setY(point.getY() + MOVE_SPEED);
-        }
-        repaint();
-    }
-    
-    private int dir(int dir){
-        if(dir >= 0)
-            return 1;
-        return -1;
-    }
-
-    public ArrayList<Point3D> getPoints() {
-        return points;
+    public static void main(String[] args) {
+        launch(args);
     }
 }
