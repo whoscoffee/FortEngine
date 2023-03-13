@@ -25,4 +25,53 @@ public class Point3D {
 
         return new Point2D(x2, y3);
     }
+    public Vector3D vectorTo(Point3D other) {
+        double dx = other.x - this.x;
+        double dy = other.y - this.y;
+        double dz = other.z - this.z;
+    
+        return new Vector3D(dx, dy, dz);
+    }
+    public void translate(double dx, double dy, double dz) {
+        x += dx;
+        y += dy;
+        z += dz;
+    }
+
+    public double distanceTo(Point3D other) {
+        double dx = x - other.x;
+        double dy = y - other.y;
+        double dz = z - other.z;
+        return Math.sqrt(dx*dx + dy*dy + dz*dz);
+    }
+
+    public void rotateX(double angle) {
+        double rad = Math.toRadians(angle);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+        double yNew = y * cos - z * sin;
+        double zNew = y * sin + z * cos;
+        y = yNew;
+        z = zNew;
+    }
+    
+    public void rotateY(double angle) {
+        double rad = Math.toRadians(angle);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+        double xNew = x * cos - z * sin;
+        double zNew = x * sin + z * cos;
+        x = xNew;
+        z = zNew;
+    }
+    
+    public void rotateZ(double angle) {
+        double rad = Math.toRadians(angle);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+        double xNew = x * cos - y * sin;
+        double yNew = x * sin + y * cos;
+        x = xNew;
+        y = yNew;
+    }
 }
